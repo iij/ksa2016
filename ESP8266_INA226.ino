@@ -14,8 +14,8 @@ extern "C" {
 #define PASS "xxxxxxxxxx"
 #define WIFI_SSID "KSA_team_X"
 #define WIFI_PASS "xxxxxxxx"
-#define CALIBRATION_COEFFICIENT 1.0
-#define CALIBRATION_OFFSET 0.0
+#define CALIBRATION_A 1.0
+#define CALIBRATION_B 0.0
 // -------------------------------------------
 
 #define LED 13
@@ -63,7 +63,7 @@ void loop() {
     // 2-1. データを測定
     currents[index]    = ina226.readCurrent();
     voltages[index]    = ina226.readVoltage();
-    wind_speeds[index] = get_wind_speed() * CALIBRATION_COEFFICIENT;
+    wind_speeds[index] = get_wind_speed();
 
     // 2-2. データが一定数溜まるまで、ここまでの処理を繰り返す
     if (index < SAMPLING_COUNT - 1) {
@@ -94,7 +94,7 @@ float get_analog_voltage() {
 }
 
 float get_wind_speed() {
-    return ((get_analog_voltage() * 2.0 - 0.4) / 1.6 * 32.4 + CALIBRATION_OFFSET) * CALIBRATION_COEFFICIENT;
+    return (((get_analog_voltage() * 2.0 - 0.4) / 1.6 * 32.4) - CALIBRATION_B) / CALIBRATION_A;
 }
 
 void clear_lcd_row(int row) {
